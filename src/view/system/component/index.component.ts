@@ -23,7 +23,6 @@ import { HTMLDrawerComponent } from 'src/components/html/drawer/index.component'
 import { HolidayDrawerComponent } from 'src/components/holiday/drawer/index.component'
 import { NewsDrawerComponent } from 'src/components/news/drawer/index.component'
 import { componentTitleMap } from './types'
-import { isSelfDevelop } from 'src/utils/utils'
 import { NzButtonModule } from 'ng-zorro-antd/button'
 import { NzSliderModule } from 'ng-zorro-antd/slider'
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm'
@@ -35,6 +34,8 @@ import { CountdownComponent } from 'src/components/countdown/index.component'
 import { HTMLComponent } from 'src/components/html/index.component'
 import { HolidayComponent } from 'src/components/holiday/index.component'
 import { NewsComponent } from 'src/components/news/index.component'
+import { CarouselComponent } from 'src/components/carousel/index.component'
+import { CarouselDrawerComponent } from 'src/components/carousel/drawer/index.component'
 import event from 'src/utils/mitt'
 
 @Component({
@@ -63,6 +64,8 @@ import event from 'src/utils/mitt'
     HolidayDrawerComponent,
     NewsDrawerComponent,
     NewsComponent,
+    CarouselComponent,
+    CarouselDrawerComponent,
   ],
   providers: [NzMessageService, NzModalService],
   selector: 'system-component',
@@ -78,18 +81,18 @@ export default class SystemComponentComponent {
   @ViewChild('html') htmlChild!: HTMLDrawerComponent
   @ViewChild('holiday') holidayChild!: HolidayDrawerComponent
   @ViewChild('news') newsChild!: HolidayDrawerComponent
+  @ViewChild('carousel') carouselChild!: CarouselDrawerComponent
 
   readonly $t = $t
-  readonly isSelfDevelop = isSelfDevelop
   readonly componentTitleMap = componentTitleMap
   readonly ComponentType = ComponentType
-  components = component.components
+  components = component().components
+  compoentZoom = component().zoom
   submitting: boolean = false
-  compoentZoom = component.zoom || 1
 
   constructor(
     private message: NzMessageService,
-    private modal: NzModalService
+    private modal: NzModalService,
   ) {}
 
   ngOnInit() {}
@@ -100,9 +103,9 @@ export default class SystemComponentComponent {
       return
     }
     const current = this.components[index]
-    const prev = this.components[index - 1]
+    const prevData = this.components[index - 1]
     this.components[index - 1] = current
-    this.components[index] = prev
+    this.components[index] = prevData
   }
 
   // 下移
@@ -127,6 +130,7 @@ export default class SystemComponentComponent {
       [ComponentType.HTML]: this.htmlChild,
       [ComponentType.Holiday]: this.holidayChild,
       [ComponentType.News]: this.newsChild,
+      [ComponentType.Carousel]: this.carouselChild,
     }
     types[type]?.open(data, idx)
   }
@@ -145,7 +149,10 @@ export default class SystemComponentComponent {
   }
 
   handleZoomChange(value: number) {
-    component.zoom = value
+    component.update((prev) => {
+      prev.zoom = value
+      return prev
+    })
   }
 
   handleOk(data: any) {

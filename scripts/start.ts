@@ -36,7 +36,7 @@ dayjs.extend(utc)
 dayjs.extend(timezone)
 dayjs.tz.setDefault('Asia/Shanghai')
 
-const getWebs = (): INavProps[] => {
+const getNavs = (): INavProps[] => {
   try {
     const strings = fs.readFileSync(PATHS.db).toString().trim()
     if (!strings) throw new Error('empty')
@@ -59,7 +59,7 @@ const main = async () => {
   const configJson = getConfig()
   fs.writeFileSync(PATHS.configJson, JSON.stringify(configJson))
 
-  const db = getWebs()
+  const db = getNavs()
   let internal = {} as InternalProps
   let settings = {} as ISettings
   let tags: ITagPropValues[] = []
@@ -132,7 +132,7 @@ const main = async () => {
   } catch {
   } finally {
     let idx = component.components.findIndex(
-      (item) => item['type'] === ComponentType.Calendar
+      (item) => item['type'] === ComponentType.Calendar,
     )
     const calendar = {
       type: ComponentType.Calendar,
@@ -150,7 +150,7 @@ const main = async () => {
     }
     //
     idx = component.components.findIndex(
-      (item) => item['type'] === ComponentType.OffWork
+      (item) => item['type'] === ComponentType.OffWork,
     )
     const offWork = {
       type: ComponentType.OffWork,
@@ -170,7 +170,7 @@ const main = async () => {
     }
     //
     idx = component.components.findIndex(
-      (item) => item['type'] === ComponentType.Image
+      (item) => item['type'] === ComponentType.Image,
     )
     const image = {
       type: ComponentType.Image,
@@ -186,14 +186,14 @@ const main = async () => {
       }
       component.components[idx]['url'] = replaceJsdelivrCDN(
         component.components[idx]['url'],
-        settings
+        settings,
       )
     } else {
       component.components.push(image)
     }
     //
     idx = component.components.findIndex(
-      (item) => item['type'] === ComponentType.Countdown
+      (item) => item['type'] === ComponentType.Countdown,
     )
     const countdown = {
       type: ComponentType.Countdown,
@@ -213,14 +213,14 @@ const main = async () => {
       }
       component.components[idx]['url'] = replaceJsdelivrCDN(
         component.components[idx]['url'],
-        settings
+        settings,
       )
     } else {
       component.components.push(countdown)
     }
     //
     idx = component.components.findIndex(
-      (item) => item['type'] === ComponentType.Runtime
+      (item) => item['type'] === ComponentType.Runtime,
     )
     const runtime = {
       type: ComponentType.Runtime,
@@ -237,7 +237,7 @@ const main = async () => {
     }
     //
     idx = component.components.findIndex(
-      (item) => item['type'] === ComponentType.HTML
+      (item) => item['type'] === ComponentType.HTML,
     )
     const html = {
       type: ComponentType.HTML,
@@ -256,7 +256,7 @@ const main = async () => {
     }
     //
     idx = component.components.findIndex(
-      (item) => item['type'] === ComponentType.Holiday
+      (item) => item['type'] === ComponentType.Holiday,
     )
     const holiday = {
       type: ComponentType.Holiday,
@@ -273,7 +273,7 @@ const main = async () => {
     }
     //
     idx = component.components.findIndex(
-      (item) => item['type'] === ComponentType.News
+      (item) => item['type'] === ComponentType.News,
     )
     const news = {
       type: ComponentType.News,
@@ -289,6 +289,25 @@ const main = async () => {
       }
     } else {
       component.components.push(news)
+    }
+    //
+    idx = component.components.findIndex(
+      (item) => item['type'] === ComponentType.Carousel,
+    )
+    const carousel = {
+      type: ComponentType.Carousel,
+      id: -ComponentType.Carousel,
+      imgs: [],
+      width: 220,
+      fit: 'cover',
+    }
+    if (idx >= 0) {
+      component.components[idx] = {
+        ...carousel,
+        ...component.components[idx],
+      }
+    } else {
+      component.components.push(carousel)
     }
     fs.writeFileSync(PATHS.component, JSON.stringify(component))
   }
@@ -365,7 +384,7 @@ const main = async () => {
     settings.headerContent ??= ''
     settings.footerContent ??= `
 <div class="dark-white">
-  <div>共收录$\{total\}个网站</div>
+  <div>共收录$\{total}个网站</div>
   <div>Copyright © 2018-$\{year} $\{hostname}, All Rights Reserved</div>  
 </div>
 `.trim()
@@ -461,6 +480,10 @@ const main = async () => {
     settings.appDocTitle ||= ''
     settings.gitHubCDN ||= 'gcore.jsdelivr.net'
     settings.components ||= []
+
+    settings.pwaEnable ??= false
+    settings.pwaName ??= '发现导航'
+    settings.pwaIcon ||= ''
 
     // 替换CDN
     settings.favicon = replaceJsdelivrCDN(settings.favicon, settings)

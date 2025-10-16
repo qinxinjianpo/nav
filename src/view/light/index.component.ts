@@ -25,6 +25,7 @@ import { ToolbarTitleWebComponent } from 'src/components/toolbar-title/index.com
 import { SideImagesComponent } from 'src/components/side-images/index.component'
 import { ClassTabsComponent } from 'src/components/class-tabs/index.component'
 import type { INavProps } from 'src/types'
+import { SidebarComponent } from 'src/components/sidebar/index.component'
 
 @Component({
   standalone: true,
@@ -42,6 +43,7 @@ import type { INavProps } from 'src/types'
     FixbarComponent,
     SideImagesComponent,
     ClassTabsComponent,
+    SidebarComponent,
   ],
   selector: 'app-light',
   templateUrl: './index.component.html',
@@ -57,7 +59,7 @@ export default class LightComponent {
   constructor(public commonService: CommonService) {}
 
   get isEllipsis() {
-    return this.commonService.settings.lightOverType === 'ellipsis'
+    return this.commonService.settings().lightOverType === 'ellipsis'
   }
 
   ngOnInit() {
@@ -78,7 +80,7 @@ export default class LightComponent {
         this.items.toArray()[this.commonService.oneIndex].nativeElement,
         {
           behavior: 'auto',
-        }
+        },
       )
     }
 

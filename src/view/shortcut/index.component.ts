@@ -33,9 +33,9 @@ import event from 'src/utils/mitt'
 })
 export default class ShortcutComponent {
   readonly $t = $t
-  readonly settings = settings
+  readonly settings = settings()
   readonly isMobile = isMobile()
-  readonly shortcutThemeImage = settings.shortcutThemeImages?.[0]?.['src']
+  readonly shortcutThemeImage = settings().shortcutThemeImages?.[0]?.['src']
   isDark: boolean = isDarkFn()
   timer: any = null
   month = 0
@@ -70,15 +70,13 @@ export default class ShortcutComponent {
   }
 
   handleMouseLeave(e: any) {
-    try {
-      const imgs = e.currentTarget.querySelectorAll('.common-icon')
-      if (this.iconSize !== 0) {
-        imgs.forEach((el: HTMLImageElement) => {
-          el.style.width = `${this.iconSize}px`
-          el.style.height = `${this.iconSize}px`
-        })
-      }
-    } catch (error) {}
+    const imgs = e.currentTarget.querySelectorAll('.common-icon')
+    if (this.iconSize !== 0) {
+      imgs.forEach((el: HTMLImageElement) => {
+        el.style.width = `${this.iconSize}px`
+        el.style.height = `${this.iconSize}px`
+      })
+    }
   }
 
   handleMouseOver(e: any) {
